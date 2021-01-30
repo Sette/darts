@@ -82,7 +82,7 @@ def main():
       args.learning_rate,
       momentum=args.momentum,
       weight_decay=args.weight_decay)
-
+  """
   train_transform, valid_transform = utils._data_transforms_cifar10(args)
   train_data = dset.CIFAR10(root=args.data, train=True, download=True, transform=train_transform)
 
@@ -99,10 +99,52 @@ def main():
       train_data, batch_size=args.batch_size,
       sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:num_train]),
       pin_memory=True, num_workers=2)
+  """
+
+  data_dir = '../data/dog_images'
+  train_dir = data_dir + '/train'
+  valid_dir = data_dir + '/valid'
+  test_dir = data_dir + '/test'
+  # Image Transformation
+  data_transforms = {
+      'train' : transforms.Compose([
+      transforms.Resize(224),
+      transforms.RandomHorizontalFlip(), # randomly flip and rotate
+      transforms.RandomRotation(10),
+      transforms.ToTensor(),
+      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+      ]),
+      
+      'valid' : transforms.Compose([
+      transforms.Resize(224),
+      transforms.ToTensor(),
+      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+      ]),
+      
+      'test' : transforms.Compose([
+      transforms.Resize(224),
+      transforms.ToTensor(),
+      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+      ]),
+    }
+  # Reading Dataset
+  image_datasets = {
+      'train' : ImageFolder(root=train_dir,transform=data_transforms['train']),
+      'valid' : ImageFolder(root=valid_dir,transform=data_transforms['valid']),
+      'test' : ImageFolder(root=test_dir,transform=data_transforms['test'])
+  }
+  # Loading Dataset
+  data_loaders = {
+      'train' : DataLoader(image_datasets['train'],batch_size = batch_size,shuffle=True),
+      'valid' : DataLoader(image_datasets['valid'],batch_size = batch_size),
+      'test' : DataLoader(image_datasets['test'],batch_size = batch_size)    
+  }
+
+
 
   scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, float(args.epochs), eta_min=args.learning_rate_min)
-
+ 
   architect = Architect(model, args)
 
   for epoch in range(args.epochs):
@@ -117,11 +159,11 @@ def main():
     print(F.softmax(model.alphas_reduce, dim=-1))
 
     # training
-    train_acc, train_obj = train(train_queue, valid_queue, model, architect, criterion, optimizer, lr)
+    train_acc, train_obj = train(data_loaders['train'], data_loaders['valid'], model, architect, criterion, optimizer, lr)
     logging.info('train_acc %f', train_acc)
 
     # validation
-    valid_acc, valid_obj = infer(valid_queue, model, criterion)
+    valid_acc, valid_obj = infer(data_loaders['valid'], model, criterion)
     logging.info('valid_acc %f', valid_acc)
 
     utils.save_all(model, os.path.join(args.save, 'weights_'+str(epoch)+'.pt'))
