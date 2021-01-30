@@ -82,8 +82,9 @@ def main():
       args.learning_rate,
       momentum=args.momentum,
       weight_decay=args.weight_decay)
-  """
+  
   train_transform, valid_transform = utils._data_transforms_cifar10(args)
+  """
   train_data = dset.CIFAR10(root=args.data, train=True, download=True, transform=train_transform)
 
   num_train = len(train_data)
@@ -107,37 +108,20 @@ def main():
   test_dir = data_dir + '/test'
   # Image Transformation
   data_transforms = {
-      'train' : transforms.Compose([
-      transforms.Resize(224),
-      transforms.RandomHorizontalFlip(), # randomly flip and rotate
-      transforms.RandomRotation(10),
-      transforms.ToTensor(),
-      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-      ]),
+      'train' :train_transform,
       
-      'valid' : transforms.Compose([
-      transforms.Resize(224),
-      transforms.ToTensor(),
-      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-      ]),
+      'valid' : valid_transform
       
-      'test' : transforms.Compose([
-      transforms.Resize(224),
-      transforms.ToTensor(),
-      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-      ]),
     }
   # Reading Dataset
   image_datasets = {
       'train' : ImageFolder(root=train_dir,transform=data_transforms['train']),
-      'valid' : ImageFolder(root=valid_dir,transform=data_transforms['valid']),
-      'test' : ImageFolder(root=test_dir,transform=data_transforms['test'])
+      'valid' : ImageFolder(root=valid_dir,transform=data_transforms['valid'])
   }
   # Loading Dataset
   data_loaders = {
       'train' : DataLoader(image_datasets['train'],batch_size = batch_size,shuffle=True),
-      'valid' : DataLoader(image_datasets['valid'],batch_size = batch_size),
-      'test' : DataLoader(image_datasets['test'],batch_size = batch_size)    
+      'valid' : DataLoader(image_datasets['valid'],batch_size = batch_size)
   }
 
 
