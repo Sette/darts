@@ -133,8 +133,6 @@ def main():
   train_data = dset.ImageFolder(
     train_dir,
     transforms.Compose([
-      transforms.RandomResizedCrop(224),
-      transforms.RandomHorizontalFlip(),
       transforms.ColorJitter(
         brightness=0.4,
         contrast=0.4,
