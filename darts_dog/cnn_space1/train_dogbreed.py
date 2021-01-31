@@ -139,7 +139,7 @@ def main():
     valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=4)
 """
 
-   data_dir = '../../data/dog_images'
+  data_dir = '../../data/dog_images'
   train_dir = data_dir + '/train'
   valid_dir = data_dir + '/valid'
   test_dir = data_dir + '/test'
