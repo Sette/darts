@@ -12,6 +12,10 @@ import torch.utils
 import torch.nn.functional as F
 import torchvision.datasets as dset
 import torch.backends.cudnn as cudnn
+from torchvision.datasets import ImageFolder
+from torchvision.transforms import ToTensor
+from torch.utils.data import DataLoader
+
 
 from torch.autograd import Variable
 from model_search import Network
@@ -102,7 +106,7 @@ def main():
       pin_memory=True, num_workers=2)
   """
 
-  data_dir = '../data/dog_images'
+  data_dir = '../../data/dog_images'
   train_dir = data_dir + '/train'
   valid_dir = data_dir + '/valid'
   test_dir = data_dir + '/test'
@@ -120,8 +124,8 @@ def main():
   }
   # Loading Dataset
   data_loaders = {
-      'train' : DataLoader(image_datasets['train'],batch_size = batch_size,shuffle=True),
-      'valid' : DataLoader(image_datasets['valid'],batch_size = batch_size)
+      'train' : DataLoader(image_datasets['train'],batch_size = args.batch_size,shuffle=True),
+      'valid' : DataLoader(image_datasets['valid'],batch_size = args.batch_size)
   }
 
 
