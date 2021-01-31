@@ -88,7 +88,7 @@ def main():
       weight_decay=args.weight_decay)
   
   train_transform, valid_transform = utils._data_transforms_cifar10(args)
-  """
+  
   train_data = dset.CIFAR10(root=args.data, train=True, download=True, transform=train_transform)
 
   num_train = len(train_data)
@@ -104,6 +104,7 @@ def main():
       train_data, batch_size=args.batch_size,
       sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:num_train]),
       pin_memory=True, num_workers=2)
+  
   """
 
   data_dir = '../../data/dog_images'
@@ -133,6 +134,8 @@ def main():
   train_data = dset.ImageFolder(
     train_dir,
     transforms.Compose([
+      transforms.RandomResizedCrop(224),
+      transforms.RandomHorizontalFlip(),
       transforms.ColorJitter(
         brightness=0.4,
         contrast=0.4,
@@ -156,7 +159,7 @@ def main():
   valid_queue = torch.utils.data.DataLoader(
     valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=4)
 
-
+ """
 
   scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, float(args.epochs), eta_min=args.learning_rate_min)
