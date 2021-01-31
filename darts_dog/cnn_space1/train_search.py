@@ -15,7 +15,7 @@ import torch.backends.cudnn as cudnn
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import ToTensor
 from torch.utils.data import DataLoader
-
+import torchvision.transforms as transforms
 
 from torch.autograd import Variable
 from model_search import Network
