@@ -129,6 +129,36 @@ def main():
   }
 
 
+  normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+  train_data = dset.ImageFolder(
+    train_dir,
+    transforms.Compose([
+      transforms.RandomResizedCrop(224),
+      transforms.RandomHorizontalFlip(),
+      transforms.ColorJitter(
+        brightness=0.4,
+        contrast=0.4,
+        saturation=0.4,
+        hue=0.2),
+      transforms.ToTensor(),
+      normalize,
+    ]))
+  valid_data = dset.ImageFolder(
+    valid_dir,
+    transforms.Compose([
+      transforms.Resize(256),
+      transforms.CenterCrop(224),
+      transforms.ToTensor(),
+      normalize,
+    ]))
+
+  train_queue = torch.utils.data.DataLoader(
+    train_data, batch_size=args.batch_size, shuffle=True, pin_memory=True, num_workers=4)
+
+  valid_queue = torch.utils.data.DataLoader(
+    valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=4)
+
+
 
   scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, float(args.epochs), eta_min=args.learning_rate_min)
