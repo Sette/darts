@@ -144,23 +144,6 @@ def main():
   valid_dir = data_dir + '/valid'
   test_dir = data_dir + '/test'
   # Image Transformation
-  data_transforms = {
-      'train' :train_transform,
-      
-      'valid' : valid_transform
-      
-    }
-  # Reading Dataset
-  image_datasets = {
-      'train' : ImageFolder(root=train_dir,transform=data_transforms['train']),
-      'valid' : ImageFolder(root=valid_dir,transform=data_transforms['valid'])
-  }
-  # Loading Dataset
-  data_loaders = {
-      'train' : DataLoader(image_datasets['train'],batch_size = args.batch_size,shuffle=True),
-      'valid' : DataLoader(image_datasets['valid'],batch_size = args.batch_size)
-  }
-
 
   normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
   train_data = dset.ImageFolder(
