@@ -106,7 +106,7 @@ def main():
     momentum=args.momentum,
     weight_decay=args.weight_decay
     )
-
+  """
   traindir = os.path.join(args.data, 'train')
   validdir = os.path.join(args.data, 'val')
   normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -125,6 +125,59 @@ def main():
     ]))
   valid_data = dset.ImageFolder(
     validdir,
+    transforms.Compose([
+      transforms.Resize(256),
+      transforms.CenterCrop(224),
+      transforms.ToTensor(),
+      normalize,
+    ]))
+
+  train_queue = torch.utils.data.DataLoader(
+    train_data, batch_size=args.batch_size, shuffle=True, pin_memory=True, num_workers=4)
+
+  valid_queue = torch.utils.data.DataLoader(
+    valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=4)
+"""
+
+   data_dir = '../../data/dog_images'
+  train_dir = data_dir + '/train'
+  valid_dir = data_dir + '/valid'
+  test_dir = data_dir + '/test'
+  # Image Transformation
+  data_transforms = {
+      'train' :train_transform,
+      
+      'valid' : valid_transform
+      
+    }
+  # Reading Dataset
+  image_datasets = {
+      'train' : ImageFolder(root=train_dir,transform=data_transforms['train']),
+      'valid' : ImageFolder(root=valid_dir,transform=data_transforms['valid'])
+  }
+  # Loading Dataset
+  data_loaders = {
+      'train' : DataLoader(image_datasets['train'],batch_size = args.batch_size,shuffle=True),
+      'valid' : DataLoader(image_datasets['valid'],batch_size = args.batch_size)
+  }
+
+
+  normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+  train_data = dset.ImageFolder(
+    train_dir,
+    transforms.Compose([
+      transforms.RandomResizedCrop(224),
+      transforms.RandomHorizontalFlip(),
+      transforms.ColorJitter(
+        brightness=0.4,
+        contrast=0.4,
+        saturation=0.4,
+        hue=0.2),
+      transforms.ToTensor(),
+      normalize,
+    ]))
+  valid_data = dset.ImageFolder(
+    valid_dir,
     transforms.Compose([
       transforms.Resize(256),
       transforms.CenterCrop(224),
