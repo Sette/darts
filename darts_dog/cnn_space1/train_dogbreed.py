@@ -187,7 +187,8 @@ def main():
     train_acc, train_obj = train(train_queue, model, criterion_smooth, optimizer)
     logging.info('train_acc %f', train_acc)
 
-    valid_acc_top1, valid_acc_top5, valid_obj = infer(valid_queue, model, criterion)
+    logits_all, valid_acc_top1, valid_acc_top5, valid_obj = infer(valid_queue, model, criterion)
+    pickle.dump(logits_all, open( "logits_.p", "wb" ))
     logging.info('valid_acc_top1 %f', valid_acc_top1)
     logging.info('valid_acc_top5 %f', valid_acc_top5)
 
@@ -239,18 +240,22 @@ def train(train_queue, model, criterion, optimizer):
   return top1.avg, objs.avg
 
 
-def infer(valid_queue, model, criterion):
+def infer(test_queue, model, criterion):
   objs = utils.AvgrageMeter()
   top1 = utils.AvgrageMeter()
   top5 = utils.AvgrageMeter()
   model.eval()
-
-  for step, (input, target) in enumerate(valid_queue):
+  logits_all = []
+  for step, (input, target) in enumerate(test_queue):
     input = Variable(input, volatile=True).cuda()
     target = Variable(target, volatile=True).cuda(async=True)
+    
+    logits = model(input)
+    logits_all.append(logits)
 
-    logits, _ = model(input)
     loss = criterion(logits, target)
+    data = {"preds":logits, "loss":loss}
+    
 
     prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
     n = input.size(0)
@@ -259,9 +264,9 @@ def infer(valid_queue, model, criterion):
     top5.update(prec5.data[0], n)
 
     if step % args.report_freq == 0:
-      logging.info('valid %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
+      logging.info('test %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
 
-  return top1.avg, top5.avg, objs.avg
+  return logits_all, top1.avg, objs.avg
 
 
 if __name__ == '__main__':
