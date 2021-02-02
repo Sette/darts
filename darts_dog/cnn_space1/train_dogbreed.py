@@ -164,8 +164,8 @@ def main():
   valid_data = dset.ImageFolder(
     valid_dir,
     transforms.Compose([
-      transforms.Resize(256),
-      transforms.CenterCrop(224),
+      transforms.Resize(52),
+      transforms.RandomCrop(32, padding=4),
       transforms.ToTensor(),
       normalize,
     ]))
