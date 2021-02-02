@@ -88,7 +88,7 @@ def main():
 
   #genotype = eval("genotypes.%s" % args.arch)
   #model = Network(args.init_channels, CLASSES, args.layers, args.auxiliary, genotype)
-  model = utils.load_from_all("weigths.pt")
+  model = utils.load_from_all("weights.pt")
 
   if args.parallel:
     model = nn.DataParallel(model).cuda()
