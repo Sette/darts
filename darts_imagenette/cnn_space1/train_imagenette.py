@@ -17,8 +17,6 @@ import torch.backends.cudnn as cudnn
 
 from torch.autograd import Variable
 from model import NetworkImageNet as Network
-from PIL import ImageFile
-ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 parser = argparse.ArgumentParser("imagenet")
@@ -90,8 +88,6 @@ def main():
 
   genotype = eval("genotypes.%s" % args.arch)
   model = Network(args.init_channels, CLASSES, args.layers, args.auxiliary, genotype)
-  #model = utils.load_from_all("weights.pt")
-
   if args.parallel:
     model = nn.DataParallel(model).cuda()
   else:
@@ -110,7 +106,7 @@ def main():
     momentum=args.momentum,
     weight_decay=args.weight_decay
     )
-  """
+
   traindir = os.path.join(args.data, 'train')
   validdir = os.path.join(args.data, 'val')
   normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -141,52 +137,8 @@ def main():
 
   valid_queue = torch.utils.data.DataLoader(
     valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=4)
-"""
-
-  data_dir = '../../data/imagenette'
-  train_dir = data_dir + '/train'
-  valid_dir = data_dir + '/val'
-  #test_dir = data_dir + '/test'
-  # Image Transformation
-
-  normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-  train_data = dset.ImageFolder(
-    train_dir,
-    transforms.Compose([
-      transforms.RandomResizedCrop(224),
-      transforms.RandomHorizontalFlip(),
-      transforms.ColorJitter(
-        brightness=0.4,
-        contrast=0.4,
-        saturation=0.4,
-        hue=0.2),
-      transforms.ToTensor(),
-      normalize,
-    ]))
-  valid_data = dset.ImageFolder(
-    valid_dir,
-    transforms.Compose([
-      transforms.Resize(256),
-      transforms.CenterCrop(224),
-      transforms.ToTensor(),
-      normalize,
-    ]))
-
-  train_queue = torch.utils.data.DataLoader(
-    train_data, batch_size=args.batch_size, shuffle=True, pin_memory=True, num_workers=4)
-
-  valid_queue = torch.utils.data.DataLoader(
-    valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=4)
-
-  for step, (input, target) in enumerate(test_queue):
-    input = Variable(input, volatile=True).cuda()
-    print(type(target))
-    target = Variable(target, volatile=True).cuda(async=True)
-    
-
 
   scheduler = torch.optim.lr_scheduler.StepLR(optimizer, args.decay_period, gamma=args.gamma)
-
 
   best_acc_top1 = 0
   for epoch in range(args.epochs):
@@ -197,20 +149,13 @@ def main():
     train_acc, train_obj = train(train_queue, model, criterion_smooth, optimizer)
     logging.info('train_acc %f', train_acc)
 
-    '''
-    logits_all, valid_acc_top1, valid_acc_top5, valid_obj = infer(valid_queue, model, criterion)
-    pickle.dump(logits_all, open( "logits_.p", "wb" ))
+    valid_acc_top1, valid_acc_top5, valid_obj = infer(valid_queue, model, criterion)
     logging.info('valid_acc_top1 %f', valid_acc_top1)
     logging.info('valid_acc_top5 %f', valid_acc_top5)
-    
+
     is_best = False
     if valid_acc_top1 > best_acc_top1:
       best_acc_top1 = valid_acc_top1
-      is_best = True
-    '''
-    is_best = False
-    if train_acc > best_acc_top1:
-      best_acc_top1 = train_acc
       is_best = True
 
     utils.save_checkpoint({
@@ -256,22 +201,18 @@ def train(train_queue, model, criterion, optimizer):
   return top1.avg, objs.avg
 
 
-def infer(test_queue, model, criterion):
+def infer(valid_queue, model, criterion):
   objs = utils.AvgrageMeter()
   top1 = utils.AvgrageMeter()
   top5 = utils.AvgrageMeter()
   model.eval()
-  logits_all = []
-  for step, (input, target) in enumerate(test_queue):
+
+  for step, (input, target) in enumerate(valid_queue):
     input = Variable(input, volatile=True).cuda()
     target = Variable(target, volatile=True).cuda(async=True)
-    
-    logits = model(input)
-    logits_all.append(logits)
 
+    logits, _ = model(input)
     loss = criterion(logits, target)
-    data = {"preds":logits, "loss":loss}
-    
 
     prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
     n = input.size(0)
@@ -280,9 +221,9 @@ def infer(test_queue, model, criterion):
     top5.update(prec5.data[0], n)
 
     if step % args.report_freq == 0:
-      logging.info('test %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
+      logging.info('valid %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
 
-  return logits_all, top1.avg, objs.avg
+  return top1.avg, top5.avg, objs.avg
 
 
 if __name__ == '__main__':
