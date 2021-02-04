@@ -117,7 +117,7 @@ def main():
   train_data = dset.ImageFolder(
     train_dir,
     transforms.Compose([
-      transforms.RandomResizedCrop(224),
+      transforms.RandomResizedCrop(52),
       transforms.RandomHorizontalFlip(),
       transforms.ColorJitter(
         brightness=0.4,
@@ -130,8 +130,8 @@ def main():
   valid_data = dset.ImageFolder(
     valid_dir,
     transforms.Compose([
-      transforms.Resize(256),
-      transforms.CenterCrop(224),
+      transforms.Resize(52),
+      transforms.CenterCrop(52),
       transforms.ToTensor(),
       normalize,
     ]))
