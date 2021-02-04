@@ -180,8 +180,9 @@ def main():
 
   for step, (input, target) in enumerate(test_queue):
     input = Variable(input, volatile=True).cuda()
-    target = Variable(target, volatile=True).cuda(async=True)
     print(type(target))
+    target = Variable(target, volatile=True).cuda(async=True)
+    
 
 
   scheduler = torch.optim.lr_scheduler.StepLR(optimizer, args.decay_period, gamma=args.gamma)
