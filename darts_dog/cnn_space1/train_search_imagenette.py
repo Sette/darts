@@ -107,10 +107,10 @@ def main():
   
   """
 
-  data_dir = '../../data/dog_images'
+  data_dir = '../../data/imagenette'
   train_dir = data_dir + '/train'
-  valid_dir = data_dir + '/valid'
-  test_dir = data_dir + '/test'
+  valid_dir = data_dir + '/val'
+  #test_dir = data_dir + '/test'
   # Image Transformation
 
   normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
