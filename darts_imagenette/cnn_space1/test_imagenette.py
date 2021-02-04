@@ -101,6 +101,7 @@ logging.info("param size = %fMB", utils.count_parameters_in_MB(model))
 criterion = nn.CrossEntropyLoss()
 criterion = criterion.cuda()
 validdir = os.path.join(args.data, 'val')
+normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 valid_data = dset.ImageFolder(
     validdir,
     transforms.Compose([
