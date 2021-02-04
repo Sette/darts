@@ -12,10 +12,6 @@ import torch.utils
 import torch.nn.functional as F
 import torchvision.datasets as dset
 import torch.backends.cudnn as cudnn
-from torchvision.datasets import ImageFolder
-from torchvision.transforms import ToTensor
-from torch.utils.data import DataLoader
-import torchvision.transforms as transforms
 
 from torch.autograd import Variable
 from model_search import Network
@@ -86,9 +82,8 @@ def main():
       args.learning_rate,
       momentum=args.momentum,
       weight_decay=args.weight_decay)
-  
+
   train_transform, valid_transform = utils._data_transforms_cifar10(args)
-  
   train_data = dset.CIFAR10(root=args.data, train=True, download=True, transform=train_transform)
 
   num_train = len(train_data)
@@ -104,66 +99,10 @@ def main():
       train_data, batch_size=args.batch_size,
       sampler=torch.utils.data.sampler.SubsetRandomSampler(indices[split:num_train]),
       pin_memory=True, num_workers=2)
-  
-  """
-
-  data_dir = '../../data/dog_images'
-  train_dir = data_dir + '/train'
-  valid_dir = data_dir + '/valid'
-  test_dir = data_dir + '/test'
-  # Image Transformation
-  data_transforms = {
-      'train' :train_transform,
-      
-      'valid' : valid_transform
-      
-    }
-  # Reading Dataset
-  image_datasets = {
-      'train' : ImageFolder(root=train_dir,transform=data_transforms['train']),
-      'valid' : ImageFolder(root=valid_dir,transform=data_transforms['valid'])
-  }
-  # Loading Dataset
-  data_loaders = {
-      'train' : DataLoader(image_datasets['train'],batch_size = args.batch_size,shuffle=True),
-      'valid' : DataLoader(image_datasets['valid'],batch_size = args.batch_size)
-  }
-
-
-  normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-  train_data = dset.ImageFolder(
-    train_dir,
-    transforms.Compose([
-      transforms.RandomResizedCrop(224),
-      transforms.RandomHorizontalFlip(),
-      transforms.ColorJitter(
-        brightness=0.4,
-        contrast=0.4,
-        saturation=0.4,
-        hue=0.2),
-      transforms.ToTensor(),
-      normalize,
-    ]))
-  valid_data = dset.ImageFolder(
-    valid_dir,
-    transforms.Compose([
-      transforms.Resize(256),
-      transforms.CenterCrop(224),
-      transforms.ToTensor(),
-      normalize,
-    ]))
-
-  train_queue = torch.utils.data.DataLoader(
-    train_data, batch_size=args.batch_size, shuffle=True, pin_memory=True, num_workers=4)
-
-  valid_queue = torch.utils.data.DataLoader(
-    valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=4)
-
- """
 
   scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, float(args.epochs), eta_min=args.learning_rate_min)
- 
+
   architect = Architect(model, args)
 
   for epoch in range(args.epochs):
