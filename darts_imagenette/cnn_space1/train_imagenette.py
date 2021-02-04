@@ -178,7 +178,14 @@ def main():
   valid_queue = torch.utils.data.DataLoader(
     valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=4)
 
+  for step, (input, target) in enumerate(test_queue):
+    input = Variable(input, volatile=True).cuda()
+    target = Variable(target, volatile=True).cuda(async=True)
+    print(type(target))
+
+
   scheduler = torch.optim.lr_scheduler.StepLR(optimizer, args.decay_period, gamma=args.gamma)
+
 
   best_acc_top1 = 0
   for epoch in range(args.epochs):
@@ -189,14 +196,20 @@ def main():
     train_acc, train_obj = train(train_queue, model, criterion_smooth, optimizer)
     logging.info('train_acc %f', train_acc)
 
+    '''
     logits_all, valid_acc_top1, valid_acc_top5, valid_obj = infer(valid_queue, model, criterion)
     pickle.dump(logits_all, open( "logits_.p", "wb" ))
     logging.info('valid_acc_top1 %f', valid_acc_top1)
     logging.info('valid_acc_top5 %f', valid_acc_top5)
-
+    
     is_best = False
     if valid_acc_top1 > best_acc_top1:
       best_acc_top1 = valid_acc_top1
+      is_best = True
+    '''
+    is_best = False
+    if train_acc > best_acc_top1:
+      best_acc_top1 = train_acc
       is_best = True
 
     utils.save_checkpoint({
