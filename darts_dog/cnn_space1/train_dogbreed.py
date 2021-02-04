@@ -86,9 +86,9 @@ def main():
   logging.info('gpu device = %d' % args.gpu)
   logging.info("args = %s", args)
 
-  #genotype = eval("genotypes.%s" % args.arch)
-  #model = Network(args.init_channels, CLASSES, args.layers, args.auxiliary, genotype)
-  model = utils.load_from_all("weights.pt")
+  genotype = eval("genotypes.%s" % args.arch)
+  model = Network(args.init_channels, CLASSES, args.layers, args.auxiliary, genotype)
+  #model = utils.load_from_all("weights.pt")
 
   if args.parallel:
     model = nn.DataParallel(model).cuda()
