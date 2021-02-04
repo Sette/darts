@@ -101,8 +101,8 @@ def main():
 
   criterion = nn.CrossEntropyLoss()
   criterion = criterion.cuda()
-  criterion_smooth = CrossEntropyLabelSmooth(CLASSES, args.label_smooth)
-  criterion_smooth = criterion_smooth.cuda()
+  #criterion_smooth = CrossEntropyLabelSmooth(CLASSES, args.label_smooth)
+  #criterion_smooth = criterion_smooth.cuda()
 
   optimizer = torch.optim.SGD(
     model.parameters(),
