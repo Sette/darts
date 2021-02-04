@@ -164,6 +164,8 @@ def main():
       'best_acc_top1': best_acc_top1,
       'optimizer' : optimizer.state_dict(),
       }, is_best, args.save)
+    
+    utils.save_all(model, 'weights_'+str(epoch)+'.pt'))
 
 
 def train(train_queue, model, criterion, optimizer):
