@@ -186,7 +186,7 @@ def main():
     logging.info('epoch %d lr %e', epoch, scheduler.get_lr()[0])
     model.drop_path_prob = args.drop_path_prob * epoch / args.epochs
 
-    train_acc, train_obj = train(train_queue, model, criterion_smooth, optimizer)
+    train_acc, train_obj = train(train_queue, model, criterion, optimizer)
     logging.info('train_acc %f', train_acc)
 
     logits_all, valid_acc_top1, valid_acc_top5, valid_obj = infer(valid_queue, model, criterion)
