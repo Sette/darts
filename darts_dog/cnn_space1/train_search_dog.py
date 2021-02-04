@@ -112,23 +112,6 @@ def main():
   valid_dir = data_dir + '/valid'
   test_dir = data_dir + '/test'
   # Image Transformation
-  data_transforms = {
-      'train' :train_transform,
-      
-      'valid' : valid_transform
-      
-    }
-  # Reading Dataset
-  image_datasets = {
-      'train' : ImageFolder(root=train_dir,transform=data_transforms['train']),
-      'valid' : ImageFolder(root=valid_dir,transform=data_transforms['valid'])
-  }
-  # Loading Dataset
-  data_loaders = {
-      'train' : DataLoader(image_datasets['train'],batch_size = args.batch_size,shuffle=True),
-      'valid' : DataLoader(image_datasets['valid'],batch_size = args.batch_size)
-  }
-
 
   normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
   train_data = dset.ImageFolder(
@@ -158,6 +141,7 @@ def main():
 
   valid_queue = torch.utils.data.DataLoader(
     valid_data, batch_size=args.batch_size, shuffle=False, pin_memory=True, num_workers=4)
+
 
   scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, float(args.epochs), eta_min=args.learning_rate_min)
