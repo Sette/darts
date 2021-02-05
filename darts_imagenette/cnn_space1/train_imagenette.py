@@ -4,6 +4,7 @@ import numpy as np
 import time
 import torch
 import utils
+import pickle
 import glob
 import random
 import logging
@@ -165,9 +166,8 @@ def main():
       'optimizer' : optimizer.state_dict(),
       }, is_best, args.save)
 
-pickle.dump(logits_all, open( "logits.p", "wb" ))
-utils.save_all(model, 'weights.pt')
-
+  pickle.dump(logits_all, open( "logits.p", "wb" ))
+  utils.save_all(model, 'weights.pt')
 
 def train(train_queue, model, criterion, optimizer):
   objs = utils.AvgrageMeter()
