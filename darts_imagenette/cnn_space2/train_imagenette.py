@@ -4,6 +4,7 @@ import numpy as np
 import time
 import torch
 import utils
+import pickle
 import glob
 import random
 import logging
@@ -149,7 +150,7 @@ def main():
     train_acc, train_obj = train(train_queue, model, criterion_smooth, optimizer)
     logging.info('train_acc %f', train_acc)
 
-    valid_acc_top1, valid_acc_top5, valid_obj = infer(valid_queue, model, criterion)
+    logits_all, valid_acc_top1, valid_acc_top5, valid_obj = infer(valid_queue, model, criterion)
     logging.info('valid_acc_top1 %f', valid_acc_top1)
     logging.info('valid_acc_top5 %f', valid_acc_top5)
 
@@ -165,8 +166,8 @@ def main():
       'optimizer' : optimizer.state_dict(),
       }, is_best, args.save)
 
-    utils.save_all(model, 'weights_'+str(epoch)+'.pt')
-
+  pickle.dump(logits_all, open( "logits.p", "wb" ))
+  utils.save_all(model, 'weights.pt')
 
 def train(train_queue, model, criterion, optimizer):
   objs = utils.AvgrageMeter()
@@ -208,12 +209,13 @@ def infer(valid_queue, model, criterion):
   top1 = utils.AvgrageMeter()
   top5 = utils.AvgrageMeter()
   model.eval()
-
+  logits_all = []
   for step, (input, target) in enumerate(valid_queue):
     input = Variable(input, volatile=True).cuda()
     target = Variable(target, volatile=True).cuda(async=True)
 
     logits, _ = model(input)
+    logits_all.append(logits)
     loss = criterion(logits, target)
 
     prec1, prec5 = utils.accuracy(logits, target, topk=(1, 5))
@@ -225,7 +227,7 @@ def infer(valid_queue, model, criterion):
     if step % args.report_freq == 0:
       logging.info('valid %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
 
-  return top1.avg, top5.avg, objs.avg
+  return logits_all, top1.avg, top5.avg, objs.avg
 
 
 if __name__ == '__main__':

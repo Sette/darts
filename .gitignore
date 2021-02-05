@@ -103,6 +103,11 @@ search-*/
 eval-*/
 runs/
 dog*/
+logits*
+weig*
+imagenette/
+*tar.gz
+*tgz
 # Swap
 [._]*.s[a-v][a-z]
 [._]*.sw[a-p]

@@ -76,7 +76,7 @@ DARTS_V2 = Genotype(normal=[('sep_conv_3x3', 0), ('sep_conv_3x3', 1), ('sep_conv
 
 #space1 = Genotype(normal=[('sep_conv_3x3', 1), ('dil_conv_5x5', 0), ('skip_connect', 0), ('sep_conv_3x3', 2), ('sep_conv_3x3', 1), ('sep_conv_3x3', 0), ('dil_conv_5x5', 4), ('dil_conv_5x5', 0)], normal_concat=[2, 3, 4, 5], reduce=[('max_pool_3x3', 1), ('max_pool_3x3', 0), ('max_pool_3x3', 0), ('max_pool_3x3', 1), ('max_pool_3x3', 0), ('skip_connect', 2), ('skip_connect', 3), ('dil_conv_3x3', 2)], reduce_concat=[2, 3, 4, 5])  
 
-#DARTS_V2 = Genotype(normal=[('sep_conv_3x3', 1), ('dil_conv_5x5', 0), ('skip_connect', 0), ('sep_conv_3x3', 2), ('sep_conv_3x3', 1), ('sep_conv_3x3', 0), ('dil_conv_5x5', 4), ('dil_conv_5x5', 0)], normal_concat=[2, 3, 4, 5], reduce=[('max_pool_3x3', 1), ('max_pool_3x3', 0), ('max_pool_3x3', 0), ('max_pool_3x3', 1), ('max_pool_3x3', 0), ('skip_connect', 2), ('skip_connect', 3), ('dil_conv_3x3', 2)], reduce_concat=[2, 3, 4, 5])  
+DARTS_V2 = Genotype(normal=[('sep_conv_3x3', 1), ('dil_conv_5x5', 0), ('skip_connect', 0), ('sep_conv_3x3', 2), ('sep_conv_3x3', 1), ('sep_conv_3x3', 0), ('dil_conv_5x5', 4), ('dil_conv_5x5', 0)], normal_concat=[2, 3, 4, 5], reduce=[('max_pool_3x3', 1), ('max_pool_3x3', 0), ('max_pool_3x3', 0), ('max_pool_3x3', 1), ('max_pool_3x3', 0), ('skip_connect', 2), ('skip_connect', 3), ('dil_conv_3x3', 2)], reduce_concat=[2, 3, 4, 5])  
 
 DARTS = DARTS_V2
 
